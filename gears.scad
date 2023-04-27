@@ -66,9 +66,11 @@ for (i = [1:num_gears]) {
   zoffset = stacked * (num_gears - i) * (plate_thickness + spacing);
   tooth_base_height = plate_thickness * i;
 
-  translate([(1 - stacked) * (start_xoffset + max_radius * 2 * (i - 1)), 0, zoffset]) {
-    gear(radius, num_teeth, plate_thickness,
-    shaft_inner_radius, shaft_wall_thickness, shaft_height,
-    tooth_base_height, tooth_length, tooth_width, tooth_height);
+  color([i / num_gears, i / num_gears, i / num_gears]) {
+    translate([(1 - stacked) * (start_xoffset + max_radius * 2 * (i - 1)), 0, zoffset]) {
+      gear(radius, num_teeth, plate_thickness,
+      shaft_inner_radius, shaft_wall_thickness, shaft_height,
+      tooth_base_height, tooth_length, tooth_width, tooth_height);
+    }
   }
 }
