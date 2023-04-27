@@ -47,9 +47,10 @@ tooth_base_height, tooth_length, tooth_width, tooth_height) {
 num_gears = 3;
 
 max_num_teeth = 64;
-plate_thickness = 1;
-shaft_height = 30;
-shaft_wall_thickness = 1;
+plate_thickness = 1.5;
+shaft_initial_radius = 0.5;
+shaft_wall_thickness = 1.3;
+shaft_extent = 2; // how far a shaft extends another one enclosing it
 tooth_length = 3;
 tooth_width = 1.4;
 tooth_height = 1.6;
@@ -59,11 +60,13 @@ max_circumference = 2 * pi * max_radius;
 tooth_pitch = max_circumference / max_num_teeth;
 start_xoffset = max_radius - (max_radius * num_gears);
 for (i = [1:num_gears]) {
+  rem = (num_gears - i);
   radius = 20 + i * (tooth_length + spacing * 3);
   circumference = 2 * pi * radius;
   num_teeth = floor(circumference / tooth_pitch);
-  shaft_inner_radius = 1 + i * shaft_wall_thickness;
-  zoffset = stacked * (num_gears - i) * (plate_thickness + spacing);
+  shaft_inner_radius = shaft_initial_radius + rem * shaft_wall_thickness;
+  shaft_height = 30 + i * (plate_thickness + spacing + shaft_extent);
+  zoffset = stacked * rem * (plate_thickness + spacing);
   tooth_base_height = plate_thickness * i;
 
   color([i / num_gears, i / num_gears, i / num_gears]) {
