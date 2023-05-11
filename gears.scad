@@ -1,12 +1,17 @@
-include <roundedcube.scad>
-
 fn = 1000; // the quality to render at
 spacing = 0.2; // a spacing value used in various places, matches the accuracy of the printer
-stacked = 0; // 1 to stack the gears (for the preview) or 0 to space them out (for the final print)
+stacked = false; // whether to stack the gears (for the preview) to space them out (for the final print)
 pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 
-module gear_tooth(length, width, height) {
-  roundedcube(size = [length, width, height], apply_to = "zmax");
+module gear_tooth(length, width, height, $fn) {
+  translate([0, - width / 2, 0]) {
+    rotate([90, 0, 90]) {
+      linear_extrude(length) {
+        points = [for (a = [0 : 1 / $fn : 1]) [a * width, height * sin(a * 180)]];
+        polygon(points = points, $fn = $fn);
+      }
+    }
+  }
 }
 
 module gear(radius, num_teeth, thickness,
@@ -18,7 +23,7 @@ tooth_base_height, tooth_length, tooth_width, tooth_height) {
       cylinder(r = radius, h = thickness, $fn = fn);
 
       // Base for teeth
-      linear_extrude(tooth_base_height) {
+      linear_extrude(thickness + tooth_base_height) {
         difference() {
           circle(r = radius, $fn = fn);
           circle(r = radius - tooth_length, $fn = fn);
@@ -28,8 +33,8 @@ tooth_base_height, tooth_length, tooth_width, tooth_height) {
       // Teeth
       for (i = [0:num_teeth - 1]) {
         rotate([0, 0, i * (360 / num_teeth)]) {
-          translate([radius - tooth_length, 0, tooth_base_height]) {
-            gear_tooth(tooth_length, tooth_width, tooth_height);
+          translate([radius - tooth_length, - tooth_width / 2, thickness + tooth_base_height]) {
+            gear_tooth(tooth_length, tooth_width, tooth_height, fn);
           }
         }
       }
@@ -39,38 +44,42 @@ tooth_base_height, tooth_length, tooth_width, tooth_height) {
     }
     // Shaft hole
     translate([0, 0, - 0.1]) {
-      cylinder(r = shaft_inner_radius + spacing, h = shaft_height + 0.2, $fn = fn);
+      cylinder(r = shaft_inner_radius, h = shaft_height + 0.2, $fn = fn);
     }
   }
 }
 
 num_gears = 3;
 
-max_num_teeth = 64;
-plate_thickness = 1.5;
-shaft_initial_radius = 0.5;
-shaft_wall_thickness = 1.3;
-shaft_extent = 2; // how far a shaft extends another one enclosing it
+base_radius = 16;
+max_num_teeth = 68;
+plate_thickness = 1.6;
+plate_spacing = 0.4;
+shaft_initial_radius = 2.8;
+shaft_wall_thickness = 1.2;
+shaft_base_height = 30;
+shaft_extent = 3; // how far a shaft extends another one enclosing it
 tooth_length = 3;
 tooth_width = 1.4;
-tooth_height = 1.6;
+tooth_height = 1.4;
+tooth_spacing = 0.6; // how much space is left between the teeth of two gears
 
-max_radius = 20 + num_gears * (tooth_length + spacing * 3);
+max_radius = base_radius + num_gears * (tooth_length + tooth_spacing);
 max_circumference = 2 * pi * max_radius;
 tooth_pitch = max_circumference / max_num_teeth;
 start_xoffset = max_radius - (max_radius * num_gears);
 for (i = [1:num_gears]) {
   rem = (num_gears - i);
-  radius = 20 + i * (tooth_length + spacing * 3);
+  radius = base_radius + i * (tooth_length + tooth_spacing);
   circumference = 2 * pi * radius;
   num_teeth = floor(circumference / tooth_pitch);
-  shaft_inner_radius = shaft_initial_radius + rem * shaft_wall_thickness;
-  shaft_height = 30 + i * (plate_thickness + spacing + shaft_extent);
-  zoffset = stacked * rem * (plate_thickness + spacing);
-  tooth_base_height = plate_thickness * i;
+  shaft_inner_radius = shaft_initial_radius + rem * (shaft_wall_thickness + spacing);
+  shaft_height = shaft_base_height + i * (plate_thickness + spacing + shaft_extent);
+  zoffset = stacked ? rem * (plate_thickness + plate_spacing) : 0;
+  tooth_base_height = (plate_thickness + plate_spacing) * (i - 1);
 
   color([i / num_gears, i / num_gears, i / num_gears]) {
-    translate([(1 - stacked) * (start_xoffset + max_radius * 2 * (i - 1)), 0, zoffset]) {
+    translate([stacked ? 0: (start_xoffset + max_radius * 2 * (i - 1)), 0, zoffset]) {
       gear(radius, num_teeth, plate_thickness,
       shaft_inner_radius, shaft_wall_thickness, shaft_height,
       tooth_base_height, tooth_length, tooth_width, tooth_height);
