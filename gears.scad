@@ -72,21 +72,30 @@ tooth_base_height, tooth_length, tooth_width, tooth_height) {
 max_circumference = 2 * pi * max_radius;
 tooth_pitch = max_circumference / max_num_teeth;
 start_xoffset = max_radius - (max_radius * num_gears);
-for (i = [1:num_gears]) {
+
+module gear_instance(i) {
   rem = (num_gears - i);
   radius = max_radius - rem * (tooth_length + tooth_spacing);
   circumference = 2 * pi * radius;
   num_teeth = floor(circumference / tooth_pitch);
   shaft_inner_radius = shaft_initial_radius + rem * (shaft_wall_thickness + spacing);
   shaft_height = shaft_base_height + i * (plate_thickness + spacing + shaft_extent);
-  zoffset = stacked ? rem * (plate_thickness + plate_spacing) : 0;
   tooth_base_height = (plate_thickness + plate_spacing) * (i - 1);
 
   color([i / num_gears, i / num_gears, i / num_gears]) {
+    gear(radius, num_teeth, plate_thickness,
+    shaft_inner_radius, shaft_wall_thickness, shaft_height,
+    tooth_base_height, tooth_length, tooth_width, tooth_height);
+  }
+}
+
+if (is_undef(instance)) {
+  for (i = [1:num_gears]) {
+    zoffset = stacked ? rem * (plate_thickness + plate_spacing) : 0;
     translate([stacked ? 0: (start_xoffset + max_radius * 2 * (i - 1)), 0, zoffset]) {
-      gear(radius, num_teeth, plate_thickness,
-      shaft_inner_radius, shaft_wall_thickness, shaft_height,
-      tooth_base_height, tooth_length, tooth_width, tooth_height);
+      gear_instance(i);
     }
   }
+} else {
+  gear_instance(instance);
 }
