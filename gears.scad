@@ -1,6 +1,26 @@
+// Render/quality params
 fn = 1000; // the quality to render at
 spacing = 0.2; // a spacing value used in various places, matches the accuracy of the printer
 stacked = false; // whether to stack the gears (for the preview) to space them out (for the final print)
+
+// Model params
+num_gears = 3;
+max_radius = 30;
+max_num_teeth = 68;
+plate_thickness = 1.6;
+plate_spacing = 0.4;
+shaft_initial_radius = 2.8;
+shaft_wall_thickness = 1.2;
+shaft_base_height = 30;
+shaft_extent = 3; // how far a shaft extends another one enclosing it
+tooth_length = 3;
+tooth_width = 1.4;
+tooth_height = 1.4;
+tooth_spacing = 0.6; // how much space is left between the teeth of two gears
+
+module __Customizer_Limit__() {} // Only variables until this line are customizable
+
+// Constants
 pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 
 module gear_tooth(length, width, height, $fn) {
@@ -49,28 +69,12 @@ tooth_base_height, tooth_length, tooth_width, tooth_height) {
   }
 }
 
-num_gears = 3;
-
-base_radius = 16;
-max_num_teeth = 68;
-plate_thickness = 1.6;
-plate_spacing = 0.4;
-shaft_initial_radius = 2.8;
-shaft_wall_thickness = 1.2;
-shaft_base_height = 30;
-shaft_extent = 3; // how far a shaft extends another one enclosing it
-tooth_length = 3;
-tooth_width = 1.4;
-tooth_height = 1.4;
-tooth_spacing = 0.6; // how much space is left between the teeth of two gears
-
-max_radius = base_radius + num_gears * (tooth_length + tooth_spacing);
 max_circumference = 2 * pi * max_radius;
 tooth_pitch = max_circumference / max_num_teeth;
 start_xoffset = max_radius - (max_radius * num_gears);
 for (i = [1:num_gears]) {
   rem = (num_gears - i);
-  radius = base_radius + i * (tooth_length + tooth_spacing);
+  radius = max_radius - rem * (tooth_length + tooth_spacing);
   circumference = 2 * pi * radius;
   num_teeth = floor(circumference / tooth_pitch);
   shaft_inner_radius = shaft_initial_radius + rem * (shaft_wall_thickness + spacing);
