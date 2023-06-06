@@ -1,0 +1,3 @@
+[submodule "PolyGear"]
+	path = PolyGear
+	url = https://github.com/dpellegr/PolyGear.git
