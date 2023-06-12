@@ -8,4 +8,4 @@ gear_%.stl: gears.scad
 .PRECIOUS: gear_%.stl # Keep stl files
 
 gear_%.gcode: gear_%.stl
-	prusa-slicer -g --load PrusaSlicer_config_bundle.ini -o $@ $<
+	prusa-slicer --load PrusaSlicer_cli_config.ini -g -o $@ $<
