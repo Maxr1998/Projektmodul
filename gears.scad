@@ -20,9 +20,6 @@ shaft_extent = 3; // how far a shaft extends another one enclosing it
 
 module __Customizer_Limit__() {} // Only variables until this line are customizable
 
-// Constants
-pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
-
 module gear(shaft_inner_radius, shaft_wall_thickness, shaft_height) {
   difference() {
     union() {
