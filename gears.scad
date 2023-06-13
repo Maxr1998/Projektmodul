@@ -8,14 +8,14 @@ stacked = false; // whether to stack the gears (for the preview) to space them o
 
 // Model params
 num_gears = 3;
-num_teeth = 56;
-rail_radius = 24;
-rail_width = 4;
+num_teeth = 24;
+rail_radius = 9.6;
+rail_width = 1.8;
 rail_thickness = 0.6;
 gear_thickness = 3;
 shaft_initial_radius = 2.8;
 shaft_wall_thickness = 1.2;
-shaft_base_height = 30;
+shaft_base_height = 10;
 shaft_extent = 3; // how far a shaft extends another one enclosing it
 
 module __Customizer_Limit__() {} // Only variables until this line are customizable
