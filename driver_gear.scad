@@ -9,10 +9,13 @@ instance = 1;
 
 num_teeth = 24;
 gear_thickness = 1.8;
-gear_offset = 0.6; // a default offset to center the driver gear within the driven gear
+gear_mount_offset = 4.5; // distance between the gear and the motor shaft, partially determined by the mounting nut
+gear_centering_offset = 0.6; // a default offset to center the driver gear within the driven gear
+gear_offset = gear_mount_offset + gear_centering_offset;
 
-shaft_radius = 5;
-mount_radius = 2.5;
+shaft_radius = 4;
+mount_radius = 2.55;
+mount_width = 3.1;
 mount_height = 6;
 
 driven_gear_thickness = 3.6;
@@ -38,7 +41,7 @@ module mount_cutout() {
       cylinder(r = mount_radius, h = mount_height, $fn = default_fn);
 
       translate([- 3 / 2, - mount_radius, 0]) {
-        cube([3, mount_radius * 2, mount_height]);
+        cube([mount_width, mount_radius * 2, mount_height]);
       }
     }
   }
